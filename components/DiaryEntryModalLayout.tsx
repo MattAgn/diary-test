@@ -1,7 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 import type React from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
-import { ScrollView, styled, XStack, YStack } from "tamagui";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { styled, XStack, YStack } from "tamagui";
 
 import { JsStack } from "@/app/_layout";
 
@@ -18,15 +19,26 @@ export function DiaryEntryModalLayout({
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 150 : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 150 : 0}
     >
       <ContentContainer>
         <JsStack.Screen options={{ header }} />
-        <ScrollView contentContainerStyle={{ paddingHorizontal: "$1" }}>
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          enableResetScrollToCoords={false}
+          keyboardShouldPersistTaps="handled"
+          extraScrollHeight={Platform.OS === "ios" ? 55 : 0}
+          // extraHeight={Platform.OS === "ios" ? 30 : 0}
+          contentContainerStyle={{
+            paddingHorizontal: 17,
+            flexGrow: 1,
+          }}
+          style={{ flex: 1 }}
+        >
           {mainContent}
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
         <BottomActionsBar>{bottomActions}</BottomActionsBar>
       </ContentContainer>
@@ -35,7 +47,6 @@ export function DiaryEntryModalLayout({
 }
 
 const ContentContainer = styled(YStack, {
-  justifyContent: "space-between",
   flex: 1,
   backgroundColor: "$background",
 });
@@ -44,7 +55,6 @@ const BottomActionsBar = styled(XStack, {
   justifyContent: "space-around",
   backgroundColor: "$darkLightBackground",
   height: BUTTONS_BOTTOM_BAR_HEIGHT,
-  marginBottom: 0,
 });
 
 type DiaryEntryModalLayoutProps = {
